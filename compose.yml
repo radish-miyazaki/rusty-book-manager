@@ -25,12 +25,12 @@ services:
   redis:
     image: redis:alpine
     ports:
-      - ${REDIS_PORT_OUTER}:${REDIS_PORT_INNER}
+      - "${REDIS_PORT_OUTER}:${REDIS_PORT_INNER}"
   postgres:
     image: postgres:16-alpine
     command: postgres -c log_destination=stderr -c log_statement=all -c log_connections=on -c log_disconnections=on
     ports:
-      - ${DATABASE_PORT_OUTER}:${DATABASE_PORT_INNER}
+      - "${DATABASE_PORT_OUTER}:${DATABASE_PORT_INNER}"
     environment:
       - POSTGRES_USER=${DATABASE_USERNAME}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
