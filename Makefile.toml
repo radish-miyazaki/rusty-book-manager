@@ -12,7 +12,7 @@ DATABASE_PORT_OUTER = 5432
 DATABASE_PORT_INNER = 5432
 REDIS_PORT_OUTER = 6379
 REDIS_PORT_INNER = 6379
-AUTH_TOKEN_TTL = 86400       # 1日
+AUTH_TOKEN_TTL = 86400
 
 # Docker Compose のネットワーク内での接続情報
 [tasks.set-env-docker.env]
