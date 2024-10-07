@@ -37,7 +37,7 @@ JAEGER_PORT = 6831
 # ビルド・実行に関するタスク
 
 [tasks.before-build]
-run_task = [{ name = ["compose-up-db", "compose-up-redis"] }]
+run_task = [{ name = ["compose-up-db", "migrate", "compose-up-redis"] }]
 
 [tasks.compose-build-up]
 extend = "set-env-local"
