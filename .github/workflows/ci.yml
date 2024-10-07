@@ -1,0 +1,44 @@
+name: CI for book
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths-ignore:
+      - "README.md"
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      # GitHub が公式に提供しているアクション
+      # 対象となる GitHub リポジトリをこのワークフロー内でクローンするために用いる
+      - name: Checkout
+        uses: actions/checkout@v4
+      # Rust の依存関係をキャッシュするためのアクション
+      # これにより、2 回目以降の CI の実行を高速化できる場合がある
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+      # Rust のツールチェイン（e.g. rustfmt や clippy）をインストールするためのアクション
+      - name: Install toolchain
+        run: rustup toolchain install stable
+      # サードパーティの Rust ツールをインストールするためのアクション
+      # ここでは、nextest と cargo-make をインストールしている
+      - name: Install cargo-related tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: nextest,cargo-make
+      # テストコードを含むプロジェクト全体をビルドするためのアクション
+      # これにより、後続のテストや静的解析の実行のたびにビルドを行う必要がなくなり、CI の実行を高速化できる
+      # --no-run: ビルドのみを行い、テストは実行しない
+      # --locked: Cargo.lock を参照し、存在しない場合や最新状態でない場合はエラーを吐いてビルドを中断する
+      - name: Tests compile
+        run: cargo make test-ci --no-run --locked
+      # テストを実行するためのアクション
+      - name: Test
+        run: cargo make test-ci
+      # Clippy による静的解析を行うためのアクション
+      - name: Clippy
+        run: cargo make clippy-ci -- -Dwarnings
+      # Rustfmt によるフォーマットチェックを行うためのアクション
+      - name: Rustfmt
+        run: cargo make fmt -- --check
