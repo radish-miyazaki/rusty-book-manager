@@ -10,3 +10,4 @@ sqlx.workspace = true
 kernel.workspace = true
 async-trait.workspace = true
 derive-new.workspace = true
+uuid.workspace = true

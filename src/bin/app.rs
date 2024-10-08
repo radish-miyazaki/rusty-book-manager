@@ -5,7 +5,7 @@ use axum::Router;
 use tokio::net::TcpListener;
 
 use adapter::database::connect_database_with;
-use api::route::health::build_health_check_routes;
+use api::route::{book::build_book_routers, health::build_health_check_routes};
 use registry::AppRegistry;
 use shared::config::AppConfig;
 
@@ -22,6 +22,7 @@ async fn bootstrap() -> Result<()> {
 
     let app = Router::new()
         .merge(build_health_check_routes())
+        .merge(build_book_routers())
         .with_state(registry);
 
     let addr = SocketAddr::new(Ipv4Addr::LOCALHOST.into(), 8080);
