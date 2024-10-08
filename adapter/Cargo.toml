@@ -1,13 +1,20 @@
 [package]
 name = "adapter"
 version = "0.1.0"
-edition = "2021"
+edition.workspace = true
+publish.workspace = true
+license.workspace = true
 
 [dependencies]
-shared.workspace = true
-anyhow.workspace = true
-sqlx.workspace = true
 kernel.workspace = true
+shared.workspace = true
 async-trait.workspace = true
+bcrypt.workspace = true
+chrono.workspace = true
 derive-new.workspace = true
-uuid.workspace = true
+secrecy.workspace = true
+redis.workspace = true
+sqlx.workspace = true
+
+[dev-dependencies]
+anyhow.workspace = true
