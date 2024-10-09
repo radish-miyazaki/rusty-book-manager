@@ -41,7 +41,7 @@ impl IntoResponse for AppError {
             AppError::ValidationError(_) | AppError::ConvertToUuidError(_) => {
                 StatusCode::BAD_REQUEST
             }
-            AppError::UnauthenticatedError | AppError::ForbiddenError => StatusCode::UNAUTHORIZED,
+            AppError::UnauthenticatedError | AppError::ForbiddenError => StatusCode::FORBIDDEN,
             AppError::UnauthorizedError => StatusCode::UNAUTHORIZED,
             e @ (AppError::TransactionError(_)
             | AppError::SpecificOperationError(_)
