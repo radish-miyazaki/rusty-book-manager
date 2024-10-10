@@ -172,7 +172,7 @@ args = [
     "${@}",
 ]
 
-[tasks.initial_setup]
+[tasks.initial-setup]
 extend = "set-env-local"
 command = "docker"
 args = [
