@@ -4,7 +4,7 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-use axum::Router;
+use axum::{http::Method, Router};
 use tokio::net::TcpListener;
 
 use adapter::{database::connect_database_with, redis::RedisClient};
@@ -15,6 +15,7 @@ use shared::{
     env::{which, Environment},
 };
 use tower_http::{
+    cors::{self, CorsLayer},
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
     LatencyUnit,
 };
@@ -48,6 +49,13 @@ fn init_logger() -> Result<()> {
     Ok(())
 }
 
+fn cors() -> CorsLayer {
+    CorsLayer::new()
+        .allow_headers(cors::Any)
+        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
+        .allow_origin(cors::Any)
+}
+
 async fn bootstrap() -> Result<()> {
     let app_config = AppConfig::new()?;
     let pool = connect_database_with(&app_config.database);
@@ -58,6 +66,7 @@ async fn bootstrap() -> Result<()> {
     let app = Router::new()
         .merge(v1::routes())
         .merge(auth::routes())
+        .layer(cors())
         // リクエストとレスポンス時にログを出力するための Layer を追加
         .layer(
             TraceLayer::new_for_http()
