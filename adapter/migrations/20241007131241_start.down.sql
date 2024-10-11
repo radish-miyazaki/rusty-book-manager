@@ -8,4 +8,8 @@ DROP TABLE IF EXISTS users;
 
 DROP TABLE IF EXISTS roles;
 
+DROP TABLE IF EXISTS checkouts;
+
+DROP TABLE IF EXISTS returned_checkouts;
+
 DROP FUNCTION set_updated_at;
