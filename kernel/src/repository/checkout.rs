@@ -9,6 +9,7 @@ use crate::model::{
     id::{BookId, UserId},
 };
 
+#[mockall::automock]
 #[async_trait]
 pub trait CheckoutRepository: Send + Sync {
     async fn create(&self, event: CreateCheckout) -> AppResult<()>;
