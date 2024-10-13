@@ -226,32 +226,12 @@ impl BookRepositoryImpl {
 
 #[cfg(test)]
 mod tests {
-    use kernel::{model::user::event::CreateUser, repository::user::UserRepository};
-
-    use crate::repository::user::UserRepositoryImpl;
+    use std::str::FromStr;
 
     use super::*;
 
-    #[sqlx::test]
+    #[sqlx::test(fixtures("common"))]
     async fn test_register_book(pool: sqlx::PgPool) -> anyhow::Result<()> {
-        // TODO: fixture でテストデータを準備する
-        sqlx::query!(
-            r#"
-                INSERT INTO roles (name) VALUES ('Admin'), ('User');
-            "#
-        )
-        .execute(&pool)
-        .await?;
-
-        let user_repo = UserRepositoryImpl::new(ConnectionPool::new(pool.clone()));
-        let user = user_repo
-            .create(CreateUser {
-                name: "Test User".into(),
-                email: "test@example.com".into(),
-                password: "password".into(),
-            })
-            .await?;
-
         let repo = BookRepositoryImpl::new(ConnectionPool::new(pool));
 
         let book = CreateBook {
@@ -260,8 +240,9 @@ mod tests {
             isbn: "Test ISBN".into(),
             description: "Test Description".into(),
         };
+        let user_id = UserId::from_str("2bbd820c-7a88-450c-b056-19dcbadd527d")?;
 
-        repo.create(book, user.id).await?;
+        repo.create(book, user_id).await?;
 
         let options = BookListOptions {
             limit: 20,
@@ -288,8 +269,33 @@ mod tests {
         assert_eq!(author, "Test Author");
         assert_eq!(isbn, "Test ISBN");
         assert_eq!(description, "Test Description");
-        assert_eq!(owner.id, user.id);
-        assert_eq!(owner.name, "Test User");
+        assert_eq!(owner.id, user_id);
+        assert_eq!(owner.name, "Eleazar Fig");
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("common", "book"))]
+    async fn test_update_book(pool: sqlx::PgPool) -> anyhow::Result<()> {
+        let repo = BookRepositoryImpl::new(ConnectionPool::new(pool.clone()));
+
+        let book_id = BookId::from_str("9890736e-a4e4-461a-a77d-eac3517ef11b")?;
+        let book = repo.find_by_id(book_id).await?.unwrap();
+        const NEW_AUTHOR: &str = "更新後の著者名";
+        assert_ne!(book.author, NEW_AUTHOR);
+
+        let update_book = UpdateBook {
+            book_id: book.id,
+            title: book.title,
+            author: NEW_AUTHOR.into(), // このフィールドを変更
+            isbn: book.isbn,
+            description: book.description,
+            requested_user: UserId::from_str("2bbd820c-7a88-450c-b056-19dcbadd527d").unwrap(),
+        };
+        repo.update(update_book).await.unwrap();
+
+        let book = repo.find_by_id(book_id).await?.unwrap();
+        assert_eq!(book.author, NEW_AUTHOR);
 
         Ok(())
     }
