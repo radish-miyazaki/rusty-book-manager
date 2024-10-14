@@ -16,6 +16,20 @@ use crate::{
 use registry::AppRegistry;
 use shared::error::{AppError, AppResult};
 
+#[cfg_attr(
+    debug_assertions,
+    utoipa::path(
+        post,
+        path = "/api/v1/books",
+        request_body = CreateBookRequest,
+        responses(
+            (status = 201, description = "蔵書の登録に成功した場合"),
+            (status = 400, description = "リクエストのパラメータに不備があった場合"),
+            (status = 401, description = "認証されていないユーザがアクセスした場合"),
+            (status = 422, description = "リクエストした蔵書の登録に失敗した場合")
+        )
+    )
+)]
 pub async fn register_book(
     user: AuthorizedUser,
     State(register): State<AppRegistry>,
@@ -30,6 +44,22 @@ pub async fn register_book(
         .map(|_| StatusCode::CREATED)
 }
 
+#[cfg_attr(
+    debug_assertions,
+    utoipa::path(
+        get,
+        path = "/api/v1/books",
+        responses(
+            (status = 200, description = "蔵書一覧の取得に成功した場合", body = PaginatedBookResponse),
+            (status = 400, description = "指定されたクエリの値に不備があった場合"),
+            (status = 401, description = "認証されていないユーザがアクセスした場合")
+        ),
+        params(
+            ("limit" = i64, Query, description = "一度に取得する蔵書数の上限値の指定"),
+            ("offset" = i64, Query, description = "取得対象とする蔵書一覧の開始位置")
+        )
+    )
+)]
 pub async fn show_book_list(
     _user: AuthorizedUser,
     Query(query): Query<BookListQuery>,
@@ -45,6 +75,20 @@ pub async fn show_book_list(
         .map(Json)
 }
 
+#[cfg_attr(
+    debug_assertions,
+    utoipa::path(
+        get,
+        path="/api/v1/books/{book_id}",
+        responses(
+            (status = 200, description = "蔵書の更新に成功した場合。"),
+            (status = 404, description = "対象の書籍が見つからなかった場合。")
+        ),
+        params(
+            ("book_id" = Uuid, Path, description = "蔵書ID")
+        )
+    )
+)]
 pub async fn show_book(
     _user: AuthorizedUser,
     State(register): State<AppRegistry>,
@@ -60,6 +104,22 @@ pub async fn show_book(
         })
 }
 
+#[cfg_attr(
+    debug_assertions,
+    utoipa::path(
+        put,
+        path="/api/v1/books/{book_id}",
+        request_body = UpdateBookRequest,
+        responses(
+            (status = 200, description = "蔵書の更新に成功した場合。"),
+            (status = 400, description = "リクエストのパラメータに不備があった場合。"),
+            (status = 404, description = "変更対象の書籍が見つからなかった場合。")
+        ),
+        params(
+            ("book_id" = Uuid, Path, description = "蔵書ID")
+        )
+    )
+)]
 pub async fn update_book(
     user: AuthorizedUser,
     Path(book_id): Path<BookId>,
@@ -77,6 +137,19 @@ pub async fn update_book(
         .map(|_| StatusCode::OK)
 }
 
+#[cfg_attr(
+    debug_assertions,
+    utoipa::path(delete, path="/api/v1/books/{book_id}",
+        responses(
+            (status = 204, description = "書籍の削除に成功した場合。"),
+            (status = 400, description = "リクエストのパラメータが不正だった場合。"),
+            (status = 404, description = "削除対象の書籍が存在しなかった場合。"),
+        ),
+        params(
+            ("book_id" = Uuid, Path, description = "蔵書ID")
+        )
+    )
+)]
 pub async fn delete_book(
     user: AuthorizedUser,
     Path(book_id): Path<BookId>,

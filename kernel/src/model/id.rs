@@ -3,9 +3,13 @@ use std::str::FromStr;
 
 use shared::error::AppError;
 
+#[cfg(debug_assertions)]
+use utoipa::ToSchema;
+
 macro_rules! defined_id {
     ($id_type: ident) => {
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, sqlx::Type)]
+        #[cfg_attr(debug_assertions, derive(ToSchema))]
         #[serde(into = "String")]
         #[sqlx(transparent)]
         pub struct $id_type(uuid::Uuid);
