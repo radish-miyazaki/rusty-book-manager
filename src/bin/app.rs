@@ -48,6 +48,10 @@ fn init_logger() -> Result<()> {
         .with_line_number(true)
         .with_target(false);
 
+    // リリースビルドでのみ構造化ログを出力する
+    #[cfg(not(debug_assertions))]
+    let subscriber = subscriber.json();
+
     tracing_subscriber::registry()
         .with(subscriber)
         .with(env_filter)

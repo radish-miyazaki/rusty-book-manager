@@ -28,6 +28,12 @@ use crate::{extractor::AuthorizedUser, model::checkout::CheckoutsResponse};
         )
     )
 )]
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 pub async fn checkout_book(
     user: AuthorizedUser,
     Path(book_id): Path<BookId>,
@@ -59,6 +65,12 @@ pub async fn checkout_book(
         )
     )
 )]
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 pub async fn return_book(
     user: AuthorizedUser,
     Path((book_id, checkout_id)): Path<(BookId, CheckoutId)>,
@@ -81,6 +93,12 @@ pub async fn return_book(
         responses(
             (status = 200, description = "蔵書の貸し出し履歴の一覧取得に成功した場合。", body = CheckoutsResponse),
         )
+    )
+)]
+#[tracing::instrument(
+    skip(_user, registry),
+    fields(
+        user_id = %_user.user.id.to_string()
     )
 )]
 pub async fn show_checked_out_list(
@@ -106,6 +124,12 @@ pub async fn show_checked_out_list(
         params(
             ("book_id" = Uuid, Path, description = "蔵書ID")
         )
+    )
+)]
+#[tracing::instrument(
+    skip(_user, registry),
+    fields(
+        user_id = %_user.user.id.to_string()
     )
 )]
 pub async fn checkout_history(

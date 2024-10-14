@@ -30,14 +30,20 @@ use shared::error::{AppError, AppResult};
         )
     )
 )]
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 pub async fn register_book(
     user: AuthorizedUser,
-    State(register): State<AppRegistry>,
+    State(registry): State<AppRegistry>,
     Json(req): Json<CreateBookRequest>,
 ) -> AppResult<StatusCode> {
     req.validate()?;
 
-    register
+    registry
         .book_repository()
         .create(req.into(), user.id())
         .await
@@ -60,14 +66,20 @@ pub async fn register_book(
         )
     )
 )]
+#[tracing::instrument(
+    skip(_user, registry),
+    fields(
+        user_id = %_user.user.id.to_string()
+    )
+)]
 pub async fn show_book_list(
     _user: AuthorizedUser,
     Query(query): Query<BookListQuery>,
-    State(register): State<AppRegistry>,
+    State(registry): State<AppRegistry>,
 ) -> AppResult<Json<PaginatedBookResponse>> {
     query.validate()?;
 
-    register
+    registry
         .book_repository()
         .find_all(query.into())
         .await
@@ -89,12 +101,18 @@ pub async fn show_book_list(
         )
     )
 )]
+#[tracing::instrument(
+    skip(_user, registry),
+    fields(
+        user_id = %_user.user.id.to_string()
+    )
+)]
 pub async fn show_book(
     _user: AuthorizedUser,
-    State(register): State<AppRegistry>,
+    State(registry): State<AppRegistry>,
     Path(book_id): Path<BookId>,
 ) -> AppResult<Json<BookResponse>> {
-    register
+    registry
         .book_repository()
         .find_by_id(book_id)
         .await
@@ -120,17 +138,23 @@ pub async fn show_book(
         )
     )
 )]
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 pub async fn update_book(
     user: AuthorizedUser,
     Path(book_id): Path<BookId>,
-    State(register): State<AppRegistry>,
+    State(registry): State<AppRegistry>,
     Json(req): Json<UpdateBookRequest>,
 ) -> AppResult<StatusCode> {
     req.validate()?;
 
     let update_book = UpdateBookRequestWithIds::new(book_id, user.id(), req);
 
-    register
+    registry
         .book_repository()
         .update(update_book.into())
         .await
@@ -150,17 +174,23 @@ pub async fn update_book(
         )
     )
 )]
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 pub async fn delete_book(
     user: AuthorizedUser,
     Path(book_id): Path<BookId>,
-    State(register): State<AppRegistry>,
+    State(registry): State<AppRegistry>,
 ) -> AppResult<StatusCode> {
     let delete_book = DeleteBook {
         book_id,
         requested_user: user.id(),
     };
 
-    register
+    registry
         .book_repository()
         .delete(delete_book)
         .await

@@ -20,6 +20,12 @@ use crate::{
 };
 
 // Admin only
+#[tracing::instrument(
+    skip(user, registry, req),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 pub async fn register_user(
     user: AuthorizedUser,
     State(registry): State<AppRegistry>,
@@ -46,6 +52,12 @@ pub async fn register_user(
         )
     )
 )]
+#[tracing::instrument(
+    skip(_user, registry),
+    fields(
+        user_id = %_user.user.id.to_string()
+    )
+)]
 pub async fn list_users(
     _user: AuthorizedUser,
     State(registry): State<AppRegistry>,
@@ -62,6 +74,12 @@ pub async fn list_users(
 }
 
 // Admin only
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 pub async fn delete_user(
     user: AuthorizedUser,
     Path(user_id): Path<UserId>,
@@ -80,6 +98,12 @@ pub async fn delete_user(
 }
 
 // Admin only
+#[tracing::instrument(
+    skip(user, registry, req),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 pub async fn change_role(
     user: AuthorizedUser,
     Path(user_id): Path<UserId>,
@@ -108,6 +132,13 @@ pub async fn change_role(
         )
     )
 )]
+#[tracing::instrument(
+    skip(user),
+    fields(
+        user_id = %user.user.id.to_string(),
+        user_name = %user.user.name
+    )
+)]
 pub async fn get_current_user(user: AuthorizedUser) -> Json<UserResponse> {
     Json(UserResponse::from(user.user))
 }
@@ -123,6 +154,12 @@ pub async fn get_current_user(user: AuthorizedUser) -> Json<UserResponse> {
             (status = 400, description = "リクエストの形式に誤りがある場合。"),
             (status = 500, description = "サーバーサイドエラーが発生した場合。")
         )
+    )
+)]
+#[tracing::instrument(
+    skip(user, registry, req),
+    fields(
+        user_id = %user.user.id.to_string()
     )
 )]
 pub async fn change_password(
@@ -149,6 +186,12 @@ pub async fn change_password(
             (status = 200, description = "貸し出し中の書籍を取得できた場合。"),
             (status = 500, description = "サーバーサイドエラーが発生した場合。")
         )
+    )
+)]
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string()
     )
 )]
 pub async fn get_checkouts(

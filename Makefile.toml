@@ -37,7 +37,14 @@ JAEGER_PORT = 6831
 # ビルド・実行に関するタスク
 
 [tasks.before-build]
-run_task = [{ name = ["compose-up-db", "migrate", "compose-up-redis"] }]
+run_task = [
+    { name = [
+        "compose-up-db",
+        "migrate",
+        "compose-up-redis",
+        "compose-up-jaeger",
+    ] },
+]
 
 [tasks.compose-build-up]
 extend = "set-env-local"
@@ -206,6 +213,11 @@ args = ["compose", "up", "-d", "postgres"]
 extend = "set-env-docker"
 command = "docker"
 args = ["compose", "up", "-d", "redis"]
+
+[tasks.compose-up-jaeger]
+extend = "set-env-docker"
+command = "docker"
+args = ["compose", "up", "-d", "jaeger"]
 
 [tasks.compose-down]
 extend = "set-env-docker"

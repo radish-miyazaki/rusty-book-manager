@@ -21,6 +21,12 @@ use crate::{
         )
     )
 )]
+#[tracing::instrument(
+    skip(req, registry),
+    fields(
+        email_address = %req.email
+    )
+)]
 pub async fn login(
     State(registry): State<AppRegistry>,
     Json(req): Json<LoginRequest>,
@@ -48,6 +54,13 @@ pub async fn login(
         responses(
             (status = 204, description = "ログアウトに成功した場合。"),
         )
+    )
+)]
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string(),
+        user_name = %user.user.name
     )
 )]
 pub async fn logout(
