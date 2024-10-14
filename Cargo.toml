@@ -68,9 +68,9 @@ utoipa-redoc = { version = "4.0.0", features = ["axum"] }
 tracing.workspace = true
 tracing-subscriber = { version = "0.3.18", features = ["env-filter", "json"] }
 opentelemetry = "0.26.0"
-tracing-opentelemetry = "0.26.0"
-opentelemetry-jaeger = { version = "0.22.0", features = ["rt-tokio"] }
+tracing-opentelemetry = "0.27.0"
 opentelemetry_sdk = { version = "0.26.0", features = ["rt-tokio"] }
+opentelemetry-otlp = "0.26.0"
 
 [profile.dev.package.sqlx-macros]
 opt-level = 3
