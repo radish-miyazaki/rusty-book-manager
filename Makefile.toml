@@ -22,7 +22,7 @@ DATABASE_URL = "postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?
 REDIS_HOST = "redis"
 REDIS_PORT = "${REDIS_PORT_INNER}"
 JAEGER_HOST = "jaeger"
-JAEGER_PORT = 6831
+JAEGER_PORT = 4317
 
 # ローカルでの接続情報
 [tasks.set-env-local.env]
@@ -32,7 +32,7 @@ DATABASE_URL = "postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?
 REDIS_HOST = "localhost"
 REDIS_PORT = "${REDIS_PORT_OUTER}"
 JAEGER_HOST = "localhost"
-JAEGER_PORT = 6831
+JAEGER_PORT = 4317
 
 # ビルド・実行に関するタスク
 
